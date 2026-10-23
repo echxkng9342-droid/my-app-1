@@ -21,16 +21,16 @@ const POST_INTERVAL_MS = 10_000; // 같은 IP에서 연속 작성 간격
 
 // --- Supabase ---
 // 공개 키로 접속한다. 테이블은 읽기만 되고, 쓰기와 삭제는 DB 함수(add_/delete_guestbook_entry)로만 한다.
-// 접속 정보가 없어도 서버는 뜨고, 방명록 API만 503으로 응답한다.
+// 접속 정보가 없거나 잘못되어도 서버는 뜨고, 방명록 API만 503으로 응답한다.
+// 값은 노출하지 않고, 문제가 있는 변수 이름과 배포 환경만 알려 준다.
+// 대시보드의 가려진 값(•••)을 복사해 넣은 경우처럼 ASCII가 아닌 문자가 있으면 잘못 설정된 것으로 본다.
+const missingEnv = Object.entries({ SUPABASE_URL, SUPABASE_ANON_KEY })
+  .filter(([, v]) => !v || /[^\x21-\x7e]/.test(v))
+  .map(([k]) => k);
 const supabase =
   missingEnv.length === 0
     ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
     : null;
-// 값은 비밀이 아니어도 노출하지 않고, 빠진 변수 이름과 배포 환경만 알려 준다.
-// 대시보드의 가려진 값(•••)을 복사해 넣은 경우처럼 키에 ASCII가 아닌 문자가 있으면 잘못 설정된 것으로 본다.
-const missingEnv = Object.entries({ SUPABASE_URL, SUPABASE_ANON_KEY })
-  .filter(([, v]) => !v || /[^\x21-\x7e]/.test(v))
-  .map(([k]) => k);
 const envLabel = process.env.VERCEL_ENV ? ` (Vercel ${process.env.VERCEL_ENV} 환경)` : "";
 if (!supabase) {
   console.error(`환경 변수가 없습니다: ${missingEnv.join(", ")}${envLabel}`);
