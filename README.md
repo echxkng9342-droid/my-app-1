@@ -35,6 +35,12 @@ npm start
 
 브라우저에서 http://localhost:3000 을 엽니다. 포트를 바꾸려면 `PORT` 환경 변수를 설정합니다.
 
+## Vercel 배포
+
+`server.js`가 Express 앱을 내보내므로 Vercel이 서버리스 함수로 실행합니다. `.env`는 저장소에 없으니
+Vercel 프로젝트의 **Settings → Environment Variables**에 `SUPABASE_URL`과 `SUPABASE_ANON_KEY`를 등록한 뒤
+다시 배포합니다. 설정하지 않으면 페이지는 열리지만 방명록 API는 503을 돌려줍니다.
+
 ## 방명록 API
 
 | 메서드 | 경로 | 설명 |

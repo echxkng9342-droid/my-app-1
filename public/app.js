@@ -77,11 +77,12 @@ function render(entries) {
 async function load() {
   try {
     const res = await fetch("/api/entries");
-    if (!res.ok) throw new Error();
-    render(await res.json());
-  } catch {
+    const body = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(body?.error);
+    render(body);
+  } catch (err) {
     empty.hidden = false;
-    empty.textContent = "방명록을 불러오지 못했습니다. 서버가 실행 중인지 확인한 뒤 새로 고쳐 주세요.";
+    empty.textContent = err.message || "방명록을 불러오지 못했습니다. 잠시 후 새로 고쳐 주세요.";
   }
 }
 

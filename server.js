@@ -16,23 +16,30 @@ const MAX_NAME = 20;
 const MAX_MESSAGE = 300;
 const POST_INTERVAL_MS = 10_000; // 같은 IP에서 연속 작성 간격
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error("SUPABASE_URL과 SUPABASE_ANON_KEY를 .env에 설정해 주세요. (.env.example 참고)");
-  process.exit(1);
-}
-
 // --- Supabase ---
 // 공개 키로 접속한다. 테이블은 읽기만 되고, 쓰기와 삭제는 DB 함수(add_/delete_guestbook_entry)로만 한다.
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: false },
-});
+// 접속 정보가 없어도 서버는 뜨고, 방명록 API만 503으로 응답한다.
+const supabase =
+  SUPABASE_URL && SUPABASE_ANON_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
+    : null;
+if (!supabase) {
+  console.error("SUPABASE_URL과 SUPABASE_ANON_KEY가 설정되지 않았습니다. (.env.example 참고)");
+}
 
 const toEntry = (row) => ({ id: row.id, name: row.name, message: row.message, createdAt: row.created_at });
 
 // --- 서버 ---
 const app = express();
+// Vercel 같은 프록시 뒤에서는 X-Forwarded-For로 실제 접속 IP를 얻는다.
+if (process.env.VERCEL) app.set("trust proxy", true);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/api", (req, res, next) => {
+  if (supabase) return next();
+  res.status(503).json({ error: "방명록 저장소가 아직 설정되지 않았습니다." });
+});
 
 app.get("/api/entries", async (req, res) => {
   const { data, error } = await supabase
@@ -97,6 +104,11 @@ app.delete("/api/entries/:id", async (req, res) => {
   res.status(204).end();
 });
 
-app.listen(PORT, () => {
-  console.log(`my-app-1 running at http://localhost:${PORT}`);
-});
+// Vercel은 내보낸 app을 서버리스 함수로 실행한다. 로컬에서만 직접 포트를 연다.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`my-app-1 running at http://localhost:${PORT}`);
+  });
+}
+
+export default app;
