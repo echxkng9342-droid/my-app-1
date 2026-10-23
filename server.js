@@ -11,7 +11,10 @@ try {
 } catch {}
 
 const PORT = Number(process.env.PORT) || 3000;
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = process.env;
+// 대시보드에 붙여 넣을 때 섞여 들어간 공백·줄바꿈·따옴표를 걷어 낸다.
+const cleanEnv = (v) => (v ?? "").replace(/\s+/g, "").replace(/^["']|["']$/g, "");
+const SUPABASE_URL = cleanEnv(process.env.SUPABASE_URL).replace(/\/+$/, "");
+const SUPABASE_ANON_KEY = cleanEnv(process.env.SUPABASE_ANON_KEY);
 const MAX_NAME = 20;
 const MAX_MESSAGE = 300;
 const POST_INTERVAL_MS = 10_000; // 같은 IP에서 연속 작성 간격
@@ -24,7 +27,9 @@ const supabase =
     ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
     : null;
 // 값은 비밀이 아니어도 노출하지 않고, 빠진 변수 이름과 배포 환경만 알려 준다.
-const missingEnv = ["SUPABASE_URL", "SUPABASE_ANON_KEY"].filter((k) => !process.env[k]);
+const missingEnv = Object.entries({ SUPABASE_URL, SUPABASE_ANON_KEY })
+  .filter(([, v]) => !v)
+  .map(([k]) => k);
 const envLabel = process.env.VERCEL_ENV ? ` (Vercel ${process.env.VERCEL_ENV} 환경)` : "";
 if (!supabase) {
   console.error(`환경 변수가 없습니다: ${missingEnv.join(", ")}${envLabel}`);
@@ -53,7 +58,7 @@ app.get("/api/entries", async (req, res) => {
     .order("id", { ascending: false })
     .limit(200);
   if (error) {
-    console.error("list entries:", error.message);
+    console.error("list entries:", error.message, error.details ?? "");
     return res.status(502).json({ error: "방명록을 불러오지 못했습니다." });
   }
   res.json(data.map(toEntry));
