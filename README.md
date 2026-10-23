@@ -16,6 +16,14 @@ my-app-1 소개 사이트와 방명록.
 - 작성은 `add_guestbook_entry(p_name, p_message)`, 삭제는 `delete_guestbook_entry(p_id, p_token)` 함수로만 합니다.
   삭제 토큰은 작성 시 한 번만 돌려주고 DB에는 SHA-256 해시만 저장합니다.
 
+스키마는 [`supabase/migrations/`](supabase/migrations/)에 있습니다. 새 Supabase 프로젝트에 적용하려면
+대시보드의 SQL Editor에 파일 내용을 붙여 넣어 실행하거나, Supabase CLI로 적용합니다.
+
+```bash
+npx supabase link --project-ref <project-ref>
+npx supabase db push
+```
+
 ## 실행
 
 Node.js 22.13 이상이 필요합니다. `.env.example`을 `.env`로 복사해 Supabase 프로젝트 URL과 공개 키를 적습니다.
