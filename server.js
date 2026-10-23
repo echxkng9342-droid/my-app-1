@@ -23,8 +23,11 @@ const supabase =
   SUPABASE_URL && SUPABASE_ANON_KEY
     ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } })
     : null;
+// 값은 비밀이 아니어도 노출하지 않고, 빠진 변수 이름과 배포 환경만 알려 준다.
+const missingEnv = ["SUPABASE_URL", "SUPABASE_ANON_KEY"].filter((k) => !process.env[k]);
+const envLabel = process.env.VERCEL_ENV ? ` (Vercel ${process.env.VERCEL_ENV} 환경)` : "";
 if (!supabase) {
-  console.error("SUPABASE_URL과 SUPABASE_ANON_KEY가 설정되지 않았습니다. (.env.example 참고)");
+  console.error(`환경 변수가 없습니다: ${missingEnv.join(", ")}${envLabel}`);
 }
 
 const toEntry = (row) => ({ id: row.id, name: row.name, message: row.message, createdAt: row.created_at });
@@ -38,7 +41,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api", (req, res, next) => {
   if (supabase) return next();
-  res.status(503).json({ error: "방명록 저장소가 아직 설정되지 않았습니다." });
+  res.status(503).json({
+    error: `방명록 저장소가 아직 설정되지 않았습니다. 빠진 환경 변수: ${missingEnv.join(", ")}${envLabel}`,
+  });
 });
 
 app.get("/api/entries", async (req, res) => {
