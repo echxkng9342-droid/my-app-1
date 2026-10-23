@@ -59,7 +59,15 @@ app.get("/api/entries", async (req, res) => {
     .limit(200);
   if (error) {
     console.error("list entries:", error.message, error.details ?? "");
-    return res.status(502).json({ error: "방명록을 불러오지 못했습니다." });
+    // 연결 문제를 진단할 수 있게 실패 이유와 접속한 호스트만 알려 준다(키는 노출하지 않음).
+    let host = "";
+    try { host = new URL(SUPABASE_URL).host; } catch { host = "(URL 형식 오류)"; }
+    return res.status(502).json({
+      error: "방명록을 불러오지 못했습니다.",
+      reason: String(error.message ?? "").slice(0, 200),
+      details: String(error.details ?? "").slice(0, 300),
+      host,
+    });
   }
   res.json(data.map(toEntry));
 });
