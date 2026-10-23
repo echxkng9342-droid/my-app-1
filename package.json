@@ -1,0 +1,19 @@
+{
+  "name": "my-app-1",
+  "version": "0.1.0",
+  "description": "my-app-1 소개 사이트와 방명록",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "express": "^4.21.2"
+  }
+}

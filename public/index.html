@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>my-app-1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="meta">
+        <span class="tag">v0.1.0</span>
+        <span class="chip">MIT</span>
+        <span class="chip">web</span>
+      </div>
+      <h1>my-app-1</h1>
+      <p class="lede">작게 시작한 첫 번째 앱입니다. 아이디어를 빠르게 만들어 보고, 써 본 사람의 의견을 듣고, 다시 다듬기 위해 만들었습니다.</p>
+    </header>
+
+    <section aria-labelledby="about">
+      <span class="label">소개</span>
+      <h2 id="about">무엇을 하는 앱인가요</h2>
+      <p>my-app-1은 매일 하는 작은 일을 한곳에 모아 두는 가벼운 웹 앱입니다. 설치 없이 브라우저에서 바로 열 수 있고, 화면은 휴대폰과 데스크톱 모두에 맞춰집니다. 지금은 초기 버전이라 기능이 많지 않지만, 방명록에 남겨 주시는 의견을 보고 다음 버전을 정합니다.</p>
+    </section>
+
+    <section aria-labelledby="features">
+      <span class="label" id="features">주요 기능</span>
+      <div class="features">
+        <div class="feature"><h3>빠른 시작</h3><p>회원가입 없이 첫 화면에서 바로 사용합니다.</p></div>
+        <div class="feature"><h3>어디서나</h3><p>휴대폰, 태블릿, 데스크톱에서 같은 화면을 봅니다.</p></div>
+        <div class="feature"><h3>밝게, 어둡게</h3><p>기기 설정에 맞춰 라이트·다크 테마가 바뀝니다.</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="start">
+      <span class="label">시작하기</span>
+      <h2 id="start">직접 실행해 보기</h2>
+      <pre class="code"><span class="c"># Node.js 22.13 이상이 필요합니다</span>
+cd my-app-1
+cp .env.example .env   <span class="c"># Supabase URL과 공개 키 입력</span>
+npm install
+npm start
+<span class="c"># 브라우저에서 http://localhost:3000 을 엽니다</span></pre>
+    </section>
+
+    <section aria-labelledby="guestbook">
+      <div class="gb-head">
+        <div class="stack">
+          <span class="label">방명록</span>
+          <h2 id="guestbook">한마디 남기기</h2>
+        </div>
+        <span class="count" id="gb-count"></span>
+      </div>
+
+      <form id="gb-form" novalidate>
+        <div class="field">
+          <label class="label" for="gb-name">이름</label>
+          <input id="gb-name" name="name" maxlength="20" autocomplete="nickname" placeholder="닉네임" required>
+        </div>
+        <div class="field">
+          <label class="label" for="gb-text">메시지</label>
+          <textarea id="gb-text" name="message" maxlength="300" placeholder="써 본 소감, 바라는 기능, 응원 한마디 무엇이든 좋아요." required></textarea>
+        </div>
+        <div class="form-row">
+          <span class="hint" id="gb-len">0 / 300</span>
+          <button class="primary" id="gb-submit" type="submit" disabled>남기기</button>
+        </div>
+        <div class="status" id="gb-status" role="status"></div>
+      </form>
+
+      <div id="gb-empty" class="empty">방명록을 불러오는 중입니다…</div>
+      <ol class="entries" id="gb-list" hidden></ol>
+    </section>
+
+    <footer>my-app-1 · 2026</footer>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
